@@ -71,13 +71,20 @@ func (p *AliyunMQAckMsgDecoder) DecodeError(bodyBytes []byte, resource string, r
 			decodedError = ParseError(errResp, resource)
 		}
 	} else {
-		// receipt handle error, only  select one?
+		var errorItems []ErrAckItem
+		for _, v := range p.v.FailedMessages {
+			errorItems = append(errorItems, ErrAckItem{
+				ErrorCode:   v.ErrorCode,
+				ErrorHandle: v.ReceiptHandle,
+				ErrorMsg:    v.ErrorMessage,
+			})
+		}
 		decodedError = ErrAckMessage.New(errors.Params{
 			"Code":          p.v.FailedMessages[0].ErrorCode,
 			"Message":       p.v.FailedMessages[0].ErrorMessage,
 			"ReceiptHandle": p.v.FailedMessages[0].ReceiptHandle,
 			"RequestId":     requestId,
-		})
+		}).WithContext("Detail", errorItems)
 	}
 	return
 }

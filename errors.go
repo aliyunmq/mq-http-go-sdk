@@ -24,3 +24,9 @@ var (
 
 	ErrAckMessage = errors.TN(ALIYUN_MQ_ERR_NS, 102, "aliyun_mq ack message error,code: {{.Code}}, message: {{.Message}}, receiptHandle: {{.ReceiptHandle}}, requestId: {{.RequestId}}")
 )
+
+type ErrAckItem struct {
+	ErrorHandle string
+	ErrorMsg    string
+	ErrorCode   string
+}
