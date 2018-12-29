@@ -1,4 +1,4 @@
-package aliyun_mq
+package mq_http_sdk
 
 import (
 	"bytes"
