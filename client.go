@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	ClientName           = "mq-go-sdk/1.0.0(fasthttp)"
+	ClientName           = "mq-go-sdk/1.0.1(fasthttp)"
 	ClientVersion        = "2015-06-06"
 	DefaultTimeout int64 = 35
 )
@@ -35,6 +35,7 @@ const (
 
 type MQClient interface {
 	GetProducer(instanceId string, topicName string) MQProducer
+	GetTransProducer(instanceId string, topicName string, groupId string) MQTransProducer
 	GetConsumer(instanceId string, topicName string, consumer string, messageTag string) MQConsumer
 	GetCredential() Credential
 	GetEndpoint() string
@@ -79,6 +80,28 @@ func (p *AliyunMQClient) GetProducer(instanceId string, topicName string) MQProd
 	ret.topicName = topicName
 	ret.instanceId = instanceId
 	ret.decoder = NewAliyunMQDecoder()
+	return ret
+}
+
+func (p *AliyunMQClient) GetTransProducer(instanceId string, topicName string, groupId string) MQTransProducer {
+	if topicName == "" {
+		panic("mq_go_sdk: topic name could not be empty")
+	}
+
+	if groupId == "" {
+		panic("mq_go_sdk: group id could not be empty")
+	}
+
+	producer := new(AliyunMQProducer)
+	producer.client = p
+	producer.topicName = topicName
+	producer.instanceId = instanceId
+	producer.decoder = NewAliyunMQDecoder()
+
+	ret := new(AliyunMQTransProducer)
+	ret.producer = producer
+	ret.groupId = groupId
+	ret.consumeDecoder = NewAliyunMQDecoder()
 	return ret
 }
 
@@ -221,7 +244,7 @@ func (p *AliyunMQClient) Send(decoder MQDecoder, method Method, headers map[stri
 			statusCode != fasthttp.StatusNoContent {
 
 			// get the response body
-			//   the body is set in error when decoding xml failed
+			// the body is set in error when decoding xml failed
 			bodyBytes := resp.Body()
 
 			var e2 error

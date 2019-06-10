@@ -82,6 +82,7 @@ func (p *AliyunMQConsumer) ConsumeMessage(respChan chan ConsumeMessageResponse, 
 	if err != nil {
 		errChan <- err
 	} else {
+		ConstructRecMessage(&resp.Messages)
 		respChan <- resp
 	}
 
