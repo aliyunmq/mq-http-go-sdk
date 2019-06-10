@@ -19,7 +19,7 @@ Aliyun MQ Console: https://ons.console.aliyun.com
 
 [Consume Message](https://github.com/aliyunmq/mq-http-samples/blob/master/go/producer.go)
 
-### V1.0.0 Samples
+### V1.0.1 Samples
 [Publish Message](https://github.com/aliyunmq/mq-http-samples/tree/101-dev/go/producer.go)
 
 [Consume Message](https://github.com/aliyunmq/mq-http-samples/tree/101-dev/go/producer.go)
