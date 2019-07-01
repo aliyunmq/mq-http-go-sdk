@@ -25,3 +25,5 @@ Aliyun MQ Console: https://ons.console.aliyun.com
 [Consume Message](https://github.com/aliyunmq/mq-http-samples/tree/101-dev/go/producer.go)
 
 [Transaction Message](https://github.com/aliyunmq/mq-http-samples/tree/101-dev/go/trans_producer.go)
+
+Note for 1.0.1: Http consumer only support timer msg(less than 3 days), no matter the msg is produced from http or tcp protocal.
