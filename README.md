@@ -17,12 +17,12 @@ Aliyun MQ Console: https://ons.console.aliyun.com
 ### V1.0.0 Samples
 [Publish Message](https://github.com/aliyunmq/mq-http-samples/blob/master/go/producer.go)
 
-[Consume Message](https://github.com/aliyunmq/mq-http-samples/blob/master/go/producer.go)
+[Consume Message](https://github.com/aliyunmq/mq-http-samples/blob/master/go/consumer.go)
 
 ### V1.0.1 Samples
 [Publish Message](https://github.com/aliyunmq/mq-http-samples/tree/101-dev/go/producer.go)
 
-[Consume Message](https://github.com/aliyunmq/mq-http-samples/tree/101-dev/go/producer.go)
+[Consume Message](https://github.com/aliyunmq/mq-http-samples/tree/101-dev/go/consumer.go)
 
 [Transaction Message](https://github.com/aliyunmq/mq-http-samples/tree/101-dev/go/trans_producer.go)
 
