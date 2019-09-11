@@ -11,6 +11,7 @@ const (
 	StartDeliverTime = "__STARTDELIVERTIME"
 	TransCheckImmunityTime = "__TransCheckT"
 	Keys = "KEYS"
+	SHARDING = "__SHARDINGKEY"
 )
 
 type MessageResponse struct {
@@ -51,6 +52,8 @@ type PublishMessageRequest struct {
 	StartDeliverTime int64 `xml:"-" json:"-"`
 	// 在消息属性中添加第一次消息回查的最快时间,单位秒,并且表征这是一条事务消息, 10~300s
 	TransCheckImmunityTime int `xml:"-" json:"-"`
+	// 分区顺序消息中区分不同分区的关键字段，sharding key 于普通消息的 key 是完全不同的概念。全局顺序消息，该字段可以设置为任意非空字符串。
+	ShardingKey string `xml:"-" json:"-"`
 	// 序列化属性请勿使用
 	string `xml:"Properties,omitempty" json:"properties,omitempty"`
 }
@@ -100,7 +103,7 @@ type ConsumeMessageEntry struct {
 	PublishTime int64 `xml:"PublishTime" json:"publish_time"`
 	// 下次消费消息的时间（如果这次消费的消息没有Ack）
 	NextConsumeTime int64 `xml:"NextConsumeTime" json:"next_consume_time"`
-	// 第一次消费的时间
+	// 第一次消费的时间,此值对于顺序消费没有意义
 	FirstConsumeTime int64 `xml:"FirstConsumeTime" json:"first_consume_time"`
 	// 消费次数
 	ConsumedTimes int64 `xml:"ConsumedTimes" json:"consumed_times"`
@@ -114,6 +117,8 @@ type ConsumeMessageEntry struct {
 	MessageKey string `xml:"-" json:"-"`
 	// 定时消息，单位毫秒（ms）,在指定时间戳（当前时间之后）进行投递
 	StartDeliverTime int64 `xml:"-" json:"-"`
+	// 顺序消息分区Key
+	ShardingKey string `xml:"-" json:"-"`
 	// 在消息属性中添加第一次消息回查的最快时间,单位秒,并且表征这是一条事务消息
 	TransCheckImmunityTime int `xml:"-" json:"-"`
 }
@@ -140,6 +145,10 @@ func ConstructPubMessage(pubMsgReq *PublishMessageRequest) (err error) {
 
 	if pubMsgReq.TransCheckImmunityTime > 0 {
 		pubMsgReq.Properties[TransCheckImmunityTime] = strconv.Itoa(pubMsgReq.TransCheckImmunityTime)
+	}
+
+	if pubMsgReq.ShardingKey != "" {
+		pubMsgReq.Properties[SHARDING] = pubMsgReq.ShardingKey
 	}
 
 	if pubMsgReq.Properties == nil {
@@ -180,9 +189,11 @@ func ConstructRecMessage(entries *[]ConsumeMessageEntry) {
 		(*entries)[i].MessageKey = (*entries)[i].Properties[Keys]
 		(*entries)[i].StartDeliverTime, _ = strconv.ParseInt((*entries)[i].Properties[StartDeliverTime], 10, 64)
 		(*entries)[i].TransCheckImmunityTime, _ = strconv.Atoi((*entries)[i].Properties[TransCheckImmunityTime])
+		(*entries)[i].ShardingKey = (*entries)[i].Properties[SHARDING]
 		delete((*entries)[i].Properties, Keys)
 		delete((*entries)[i].Properties, StartDeliverTime)
 		delete((*entries)[i].Properties, TransCheckImmunityTime)
+		delete((*entries)[i].Properties, SHARDING)
 
 		(*entries)[i].PropInner = ""
 	}

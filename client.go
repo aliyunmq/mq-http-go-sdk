@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	ClientName           = "mq-go-sdk/1.0.1(fasthttp)"
+	ClientName           = "mq-go-sdk/1.0.3(fasthttp)"
 	ClientVersion        = "2015-06-06"
 	DefaultTimeout int64 = 35
 )
@@ -119,7 +119,9 @@ func (p *AliyunMQClient) GetConsumer(instanceId string, topicName string, consum
 	ret.instanceId = instanceId
 	ret.topicName = topicName
 	ret.consumer = consumer
-	ret.messageTag = messageTag
+	if messageTag != "" {
+		ret.messageTag = neturl.QueryEscape(messageTag)
+	}
 	ret.decoder = NewAliyunMQDecoder()
 
 	return ret
