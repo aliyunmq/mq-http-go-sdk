@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	neturl "net/url"
+	"strconv"
 	"sync"
 	"time"
 
@@ -264,6 +265,13 @@ func (p *AliyunMQClient) Send(decoder MQDecoder, method Method, headers map[stri
 			if e := decoder.Decode(buf, v); e != nil {
 				err = ErrUnmarshalResponseFailed.New(errors.Params{"err": e})
 				return
+			}
+			responder := v.(MessageResponder)
+			messageRespSlice := responder.Responses()
+			for i := range messageRespSlice {
+				messageRespSlice[i].Code = strconv.Itoa(resp.StatusCode())
+				messageRespSlice[i].RequestId = string(resp.Header.Peek("x-mq-request-id"))
+				messageRespSlice[i].HostId = resp.RemoteAddr().String()
 			}
 		}
 	}
