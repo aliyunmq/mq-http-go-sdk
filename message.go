@@ -129,10 +129,8 @@ type ConsumeMessageResponse struct {
 }
 
 func ConstructPubMessage(pubMsgReq *PublishMessageRequest) (err error) {
-	if pubMsgReq.MessageKey != "" || pubMsgReq.StartDeliverTime != 0 || pubMsgReq.TransCheckImmunityTime != 0 {
-		if pubMsgReq.Properties == nil {
-			pubMsgReq.Properties = make(map[string]string)
-		}
+	if pubMsgReq.Properties == nil {
+		pubMsgReq.Properties = make(map[string]string)
 	}
 
 	if pubMsgReq.MessageKey != "" {
