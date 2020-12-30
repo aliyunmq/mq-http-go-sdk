@@ -43,7 +43,7 @@ type MQClient interface {
 }
 
 type AliyunMQClient struct {
-	timeout      int64
+	timeout      time.Duration
 	endpoint     *neturl.URL
 	credential   Credential
 	client       *fasthttp.Client
@@ -51,6 +51,10 @@ type AliyunMQClient struct {
 }
 
 func NewAliyunMQClient(endpoint, accessKeyId, accessKeySecret, securityToken string) MQClient {
+	return NewAliyunMQClientWithTimeout(endpoint, accessKeyId, accessKeySecret, securityToken, time.Second*time.Duration(DefaultTimeout))
+}
+
+func NewAliyunMQClientWithTimeout(endpoint, accessKeyId, accessKeySecret, securityToken string, timeout time.Duration) MQClient {
 	if endpoint == "" {
 		panic("mq_go_sdk: endpoint is empty")
 	}
@@ -59,6 +63,7 @@ func NewAliyunMQClient(endpoint, accessKeyId, accessKeySecret, securityToken str
 
 	cli := new(AliyunMQClient)
 	cli.credential = credential
+	cli.timeout = timeout
 
 	var err error
 	if cli.endpoint, err = neturl.Parse(endpoint); err != nil {
@@ -140,15 +145,7 @@ func (p *AliyunMQClient) initFastHttpClient() {
 	p.clientLocker.Lock()
 	defer p.clientLocker.Unlock()
 
-	timeoutInt := DefaultTimeout
-
-	if p.timeout > 0 {
-		timeoutInt = p.timeout
-	}
-
-	timeout := time.Second * time.Duration(timeoutInt)
-
-	p.client = &fasthttp.Client{ReadTimeout: timeout, WriteTimeout: timeout, Name: ClientName}
+	p.client = &fasthttp.Client{ReadTimeout: p.timeout, WriteTimeout: p.timeout, Name: ClientName}
 }
 
 func (p *AliyunMQClient) authorization(method Method, headers map[string]string, resource string) (authHeader string, err error) {
