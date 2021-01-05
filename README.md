@@ -12,31 +12,31 @@ Aliyun MQ Console: https://ons.console.aliyun.com
     - WINDOWS: set GOPATH={dir}
 2. go get -x -v
 
-## Sample
+## Note
+1. Http consumer only support timer msg (less than 3 days), no matter the msg is produced from http or tcp protocol.
+2. Order is only supported at special server cluster.
 
-### V1.0.0 Samples
+## Sample (github)
+
 [Publish Message](https://github.com/aliyunmq/mq-http-samples/blob/master/go/producer.go)
 
 [Consume Message](https://github.com/aliyunmq/mq-http-samples/blob/master/go/consumer.go)
 
-### V1.0.1 Samples
-[Publish Message](https://github.com/aliyunmq/mq-http-samples/tree/101-dev/go/producer.go)
+[Transaction Message](https://github.com/aliyunmq/mq-http-samples/blob/master/go/trans_producer.go)
 
-[Consume Message](https://github.com/aliyunmq/mq-http-samples/tree/101-dev/go/consumer.go)
+[Publish Order Message](https://github.com/aliyunmq/mq-http-samples/blob/master/go/order_producer.go)
 
-[Transaction Message](https://github.com/aliyunmq/mq-http-samples/tree/101-dev/go/trans_producer.go)
+[Consume Order Message](https://github.com/aliyunmq/mq-http-samples/blob/master/go/order_consumer.go)
 
-Note for 1.0.1: Http consumer only support timer msg(less than 3 days), no matter the msg is produced from http or tcp protocal.
 
-### V1.0.3 Samples
-[Publish Message](https://github.com/aliyunmq/mq-http-samples/tree/103-dev/go/producer.go)
+## Sample (code.aliyun.com)
 
-[Consume Message](https://github.com/aliyunmq/mq-http-samples/tree/103-dev/go/consumer.go)
+[Publish Message](https://code.aliyun.com/aliware_rocketmq/mq-http-samples/blob/master/go/producer.go)
 
-[Transaction Message](https://github.com/aliyunmq/mq-http-samples/tree/103-dev/go/trans_producer.go)
+[Consume Message](https://code.aliyun.com/aliware_rocketmq/mq-http-samples/blob/master/go/consumer.go)
 
-[Publish Order Message](https://github.com/aliyunmq/mq-http-samples/tree/103-dev/go/order_producer.go)
+[Transaction Message](https://code.aliyun.com/aliware_rocketmq/mq-http-samples/blob/master/go/trans_producer.go)
 
-[Consume Order Message](https://github.com/aliyunmq/mq-http-samples/tree/103-dev/go/order_consumer.go)
+[Publish Order Message](https://code.aliyun.com/aliware_rocketmq/mq-http-samples/blob/master/go/order_producer.go)
 
-Not for 1.0.3: Order is only supported at special server cluster.
+[Consume Order Message](https://code.aliyun.com/aliware_rocketmq/mq-http-samples/blob/master/go/order_consumer.go)
