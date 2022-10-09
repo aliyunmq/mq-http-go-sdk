@@ -50,20 +50,48 @@ type AliyunMQClient struct {
 	clientLocker sync.Mutex
 }
 
-func NewAliyunMQClient(endpoint, accessKeyId, accessKeySecret, securityToken string) MQClient {
-	return NewAliyunMQClientWithTimeout(endpoint, accessKeyId, accessKeySecret, securityToken, time.Second*time.Duration(DefaultTimeout))
+type AliyunMQClientOptions struct {
+	credential Credential
+	timeout    time.Duration
+}
+
+type AliyunMQClientOption func(*AliyunMQClientOptions)
+
+func WithTimeout(timeout time.Duration) AliyunMQClientOption {
+	return func(o *AliyunMQClientOptions) {
+		o.timeout = timeout
+	}
+}
+
+func WithCredential(credential Credential) AliyunMQClientOption {
+	return func(o *AliyunMQClientOptions) {
+		o.credential = credential
+	}
+}
+
+func NewAliyunMQClient(endpoint, accessKeyId, accessKeySecret, securityToken string, opts ...AliyunMQClientOption) MQClient {
+	o := AliyunMQClientOptions{
+		credential: NewMQCredential(accessKeyId, accessKeySecret, securityToken),
+		timeout:    time.Duration(DefaultTimeout) * time.Second,
+	}
+	for _, opt := range opts {
+		opt(&o)
+	}
+	return newAliyunMQClientWithOptions(endpoint, &o)
 }
 
 func NewAliyunMQClientWithTimeout(endpoint, accessKeyId, accessKeySecret, securityToken string, timeout time.Duration) MQClient {
+	return NewAliyunMQClient(endpoint, accessKeyId, accessKeySecret, securityToken, WithTimeout(timeout))
+}
+
+func newAliyunMQClientWithOptions(endpoint string, opts *AliyunMQClientOptions) MQClient {
 	if endpoint == "" {
 		panic("mq_go_sdk: endpoint is empty")
 	}
 
-	credential := NewMQCredential(accessKeyId, accessKeySecret, securityToken)
-
 	cli := new(AliyunMQClient)
-	cli.credential = credential
-	cli.timeout = timeout
+	cli.credential = opts.credential
+	cli.timeout = opts.timeout
 
 	var err error
 	if cli.endpoint, err = neturl.Parse(endpoint); err != nil {
